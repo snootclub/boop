@@ -1,0 +1,33 @@
+{
+	"name": "@snootclub/boop",
+	"version": "0.0.0",
+	"description": "route snoot boops",
+	"main": "index.js",
+	"scripts": {
+		"test": "tap tests/**/**.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/snootclub/boop.git"
+	},
+	"keywords": [
+		"boop",
+		"snoot"
+	],
+	"author": "chee <chee@snoot.club>",
+	"license": "GPL-3.0+",
+	"bugs": {
+		"url": "https://github.com/snootclub/boop/issues"
+	},
+	"homepage": "https://github.com/snootclub/boop#readme",
+	"bin": {
+		"boop": "./program.js"
+	},
+	"dependencies": {
+		"commander": "^2.19.0",
+		"execa": "^1.0.0",
+		"fs-extra": "^7.0.1",
+		"serve-handler": "^5.0.7"
+	},
+	"devDependencies": {}
+}
