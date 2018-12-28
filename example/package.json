@@ -1,0 +1,21 @@
+{
+	"name": "boop-example",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"watch": "boop",
+		"build": "boop",
+		"install": "boop",
+		"start": "concurrently 'npm run-script watch' 'micro index.js'"
+	},
+	"author": "chee <chee@snoot.club>",
+	"license": "GPL-3.0+",
+	"dependencies": {
+		"concurrently": "^4.1.0",
+		"micro": "^9.3.3"
+	},
+	"devDependencies": {
+		"micro-dev": "^3.0.0"
+	}
+}
