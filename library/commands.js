@@ -26,7 +26,7 @@ let npmRun = (commandString, boopName) => {
 	], {
 		extendEnv: true,
 		env: {
-			BOOP_OUTPUT_DIRECTORY: "website",
+			BOOP_WEBSITE_DIRECTORY: "website",
 			BOOP_PUBLIC_URL: `/${boopName}`,
 			// deprecated, but for old canvas sketches
 			SNOOT_OUTPUT_DIRECTORY: "website",
