@@ -29,5 +29,12 @@
 		"fs-extra": "^7.0.1",
 		"serve-handler": "^5.0.7"
 	},
-	"devDependencies": {}
+	"devDependencies": {},
+	"files": [
+		"index.js",
+		"program.js",
+		"route.js",
+		"symbols.js",
+		"library/*"
+	]
 }
