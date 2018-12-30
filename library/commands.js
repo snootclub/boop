@@ -4,9 +4,15 @@ let execa = require("execa")
 
 let boopsDirectory = "boops"
 
+let directoryReducer = (names, entry) =>
+	entry.isDirectory()
+		? names.concat(entry.name)
+		: names
+
 let getBoopNames = async () =>
 	await fs.pathExists(boopsDirectory)
-		? fs.readdir(boopsDirectory)
+		? (await fs.readdir(boopsDirectory, {withFileTypes: true}))
+			.reduce(directoryReducer, [])
 		: []
 
 let getBoopPathFromName = name =>
