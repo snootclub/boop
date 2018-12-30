@@ -12,6 +12,7 @@
 	"author": "chee <chee@snoot.club>",
 	"license": "GPL-3.0+",
 	"dependencies": {
+		"@snootclub/boop": "0.0.2",
 		"concurrently": "^4.1.0",
 		"micro": "^9.3.3"
 	},
