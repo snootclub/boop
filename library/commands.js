@@ -12,19 +12,24 @@ let getBoopNames = async () =>
 let getBoopPathFromName = name =>
 	path.resolve(boopsDirectory, name)
 
-let npmRun = (commandString, boopName) => {
-	let command = commandString.split(/\s+/)
-	let args = [
-		"run-script",
-		"--scripts-prepend-node-path=true"
+let npm = (commandName, boopName) => {
+	let command = commandName == "install"
+		? ["install"]
+		: [
+			"run-script",
+			"--scripts-prepend-node-path=true",
+			commandName
+		]
+
+	let prefix = [
+		"--prefix",
+		getBoopPathFromName(boopName)
 	]
 
-	if (boopName !== ".") {
-		args.push("--prefix", getBoopPathFromName(boopName))
-	}
+	console.log(`running ${commandName} in ${boopName}`)
 
 	return execa("npm", [
-		...args,
+		...prefix,
 		...command
 	], {
 		extendEnv: true,
@@ -35,7 +40,7 @@ let npmRun = (commandString, boopName) => {
 			SNOOT_OUTPUT_DIRECTORY: "website",
 			SNOOT_PUBLIC_URL: `/${boopName}`
 		}
-	})
+	}).then(result => (console.log(`completed ${commandName} in ${boopName}`), result))
 }
 
 let boopInParallel = async fn => {
@@ -46,18 +51,9 @@ let boopInParallel = async fn => {
 
 let createTask = taskName => () =>
 	boopInParallel(async name =>
-		npmRun(
-			taskName,
-			name
-		)
+		npm(taskName, name)
 	)
 
 exports.build = createTask("build")
 exports.watch = createTask("watch")
-exports.install = () =>
-	boopInParallel(async name =>
-		execa("npm", [
-			"install",
-			"--prefix",
-			getBoopPathFromName(name)
-		]))
+exports.install = createTask("install")
