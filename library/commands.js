@@ -1,10 +1,13 @@
 let path = require("path")
 let fs = require("fs-extra")
 let execa = require("execa")
+
 let boopsDirectory = "boops"
 
-let getBoopNames = () =>
-	fs.readdir(boopsDirectory)
+let getBoopNames = async () =>
+	await fs.pathExists(boopsDirectory)
+		? fs.readdir(boopsDirectory)
+		: []
 
 let getBoopPathFromName = name =>
 	path.resolve(boopsDirectory, name)
