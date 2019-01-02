@@ -1,5 +1,6 @@
 let path = require("path")
-let fs = require("fs-extra")
+let readdir = require("util").promisify(require("fs").readdir)
+let checkFileExists = require("./check-file-existence.js")
 let execa = require("execa")
 
 let boopsDirectory = "boops"
@@ -10,16 +11,32 @@ let directoryReducer = (names, entry) =>
 		: names
 
 let getBoopNames = async () =>
-	await fs.pathExists(boopsDirectory)
-		? (await fs.readdir(boopsDirectory, {withFileTypes: true}))
+	await checkFileExists(boopsDirectory)
+		? (await readdir(boopsDirectory, {withFileTypes: true}))
 			.reduce(directoryReducer, [])
 		: []
 
 let getBoopPathFromName = name =>
 	path.resolve(boopsDirectory, name)
 
-let npm = (commandName, boopName) => {
-	let command = commandName == "install"
+let npm = async (commandName, boopName) => {
+	let manifestPath = path.resolve(boopsDirectory, boopName, "package.json")
+	let isInstall = commandName == "install"
+	let hasManifest = await checkFileExists(manifestPath)
+
+	if (hasManifest) {
+		let manifest = require(manifestPath)
+		let hasScript = commandName in manifest.scripts
+		if (!hasScript && !isInstall) {
+			console.info(`${boopName} doesn't have a ${commandName} script 🐁`)
+			return
+		}
+	} else {
+		console.info(`no package.json in ${boopName} 🐇`)
+		return
+	}
+
+	let command = isInstall
 		? ["install"]
 		: [
 			"run-script",
@@ -32,7 +49,7 @@ let npm = (commandName, boopName) => {
 		getBoopPathFromName(boopName)
 	]
 
-	console.log(`running ${commandName} in ${boopName}`)
+	console.log(`running ${commandName} in ${boopName} 🐕`)
 
 	return execa("npm", [
 		...prefix,
@@ -46,7 +63,7 @@ let npm = (commandName, boopName) => {
 			SNOOT_OUTPUT_DIRECTORY: "website",
 			SNOOT_PUBLIC_URL: `/${boopName}`
 		}
-	}).then(result => (console.log(`completed ${commandName} in ${boopName}`), result))
+	}).then(result => (console.log(`completed ${commandName} in ${boopName} 🦔`), result))
 }
 
 let boopInParallel = async fn => {
