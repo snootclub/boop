@@ -1,7 +1,7 @@
 let symbols = require("./symbols.js")
 let serve = require("./library/serve.js")
 let route = require("./route.js")
-let fs = require("fs-extra")
+let checkFileExists = require("./library/check-file-existence.js")
 let websiteDirectory = "website"
 
 module.exports = async (request, response) => {
@@ -16,7 +16,7 @@ module.exports = async (request, response) => {
 	}
 
 	if (boop.type == symbols.nothing) {
-		let websiteExists = await fs.pathExists(websiteDirectory)
+		let websiteExists = await checkFileExists(websiteDirectory)
 
 		return websiteExists
 			? serve({request, response, websiteDirectory})

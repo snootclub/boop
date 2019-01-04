@@ -1,4 +1,4 @@
-let fs = require("fs-extra")
+let checkFileExistence = require("./library/check-file-existence.js")
 let path = require("path")
 let augment = require("./library/augment.js")
 let symbols = require("./symbols.js")
@@ -10,7 +10,6 @@ let getName = request =>
 let getNextUrl = request =>
 	request.url.slice(getName(request).length + 1) || '/'
 
-// FIXME: would like to not mutate here
 let getNextRequest = request =>
 	augment(request, {
 		url: getNextUrl(request)
@@ -21,11 +20,11 @@ module.exports = async (request, response) => {
 
 	let boopDirectory = boopName && path.resolve(boopRoot, boopName)
 
-	if (boopName && await fs.pathExists(boopDirectory)) {
+	if (boopName && await checkFileExists(boopDirectory)) {
 		let boopManifestPath = path.resolve(boopDirectory, "package.json")
 		let boopWebsitePath = path.resolve(boopDirectory, "website")
 
-		if (await fs.pathExists(boopManifestPath)) {
+		if (await checkFileExists(boopManifestPath)) {
 			let {main} = require(boopManifestPath)
 			let nextRequest = getNextRequest(request)
 			if (main && main.endsWith(".js")) {
@@ -38,7 +37,7 @@ module.exports = async (request, response) => {
 					response: response,
 					result: boop(nextRequest, response)
 				}
-			} else if (await fs.pathExists(boopWebsitePath)) {
+			} else if (await checkFileExists(boopWebsitePath)) {
 				// no javascript module, but we have some static files maybe?
 				return {
 					type: symbols.static,
