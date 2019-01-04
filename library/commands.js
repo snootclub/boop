@@ -26,7 +26,7 @@ let npm = async (commandName, boopName) => {
 
 	if (hasManifest) {
 		let manifest = require(manifestPath)
-		let hasScript = commandName in manifest.scripts
+		let hasScript = manifest.scripts && commandName in manifest.scripts
 		if (!hasScript && !isInstall) {
 			console.info(`${boopName} doesn't have a ${commandName} script 🐁`)
 			return
