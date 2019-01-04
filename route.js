@@ -1,4 +1,4 @@
-let checkFileExistence = require("./library/check-file-existence.js")
+let checkFileExists = require("./library/check-file-existence.js")
 let path = require("path")
 let augment = require("./library/augment.js")
 let symbols = require("./symbols.js")

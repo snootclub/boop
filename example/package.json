@@ -7,7 +7,7 @@
 		"watch": "boop",
 		"build": "boop",
 		"install": "boop",
-		"start": "concurrently 'npm run-script watch' 'micro index.js'"
+		"start": "micro index.js"
 	},
 	"author": "chee <chee@snoot.club>",
 	"license": "GPL-3.0+",
