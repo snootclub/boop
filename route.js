@@ -19,22 +19,22 @@ module.exports = async (request, response) => {
 	let boopDirectory = boopName && path.resolve(boopRoot, boopName)
 
 	if (boopName && (await checkFileExists(boopDirectory))) {
-		// at this point we know there's a file
+		// at this point we know there's a file at `boops/${boopName}`
 		let boopManifestPath = path.resolve(boopDirectory, "package.json")
 		let boopWebsitePath = path.resolve(boopDirectory, "website")
 
+		// let's redirect to `module/` because that's expected for a root
+		if (request.url == `/${boopName}`) {
+			return {
+				type: symbols.redirect,
+				to: request.url + "/",
+			}
+		}
 		if (await checkFileExists(boopManifestPath)) {
 			let {main} = require(boopManifestPath)
 			let nextRequest = getNextRequest(request)
 			if (main && main.endsWith(".js")) {
 				// we found a javascript module, hopefully can handle (request, repons)
-				// let's redirect to `module/` because that's expected for a root
-				if (request.url.endsWith("/") != true) {
-					return {
-						type: symbols.redirect,
-						to: request.url + "/",
-					}
-				}
 				let boop = require(boopDirectory)
 				return {
 					type: symbols.module,
