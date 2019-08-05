@@ -11,6 +11,12 @@ module.exports = async (request, response) => {
 		return boop.result
 	}
 
+	if (boop.type == symbols.redirect) {
+		response.statusCode = 302
+		response.setHeader("Location", boop.to)
+		response.end()
+	}
+
 	if (boop.type == symbols.static) {
 		return serve(boop)
 	}
@@ -20,7 +26,9 @@ module.exports = async (request, response) => {
 
 		return websiteExists
 			? serve({request, response, websiteDirectory})
-			: new Error(`i couldnt boop such a snoot and your website directory (${websiteDirectory}) did not exist`)
+			: new Error(
+					`i couldnt boop such a snoot and your website directory (${websiteDirectory}) did not exist`
+			  )
 	}
 
 	return new Error(`i refuse to apply to a snoot a boop of a type i don't know`)

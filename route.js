@@ -3,11 +3,10 @@ let path = require("path")
 let symbols = require("./symbols.js")
 let boopRoot = "boops"
 
-let getName = request =>
-	request.url.split("/")[1]
+let getName = request => request.url.split("/")[1]
 
 let getNextUrl = request =>
-	request.url.slice(getName(request).length + 1) || '/'
+	request.url.slice(getName(request).length + 1) || "/"
 
 let getNextRequest = request => {
 	request.url = getNextUrl(request)
@@ -19,7 +18,8 @@ module.exports = async (request, response) => {
 
 	let boopDirectory = boopName && path.resolve(boopRoot, boopName)
 
-	if (boopName && await checkFileExists(boopDirectory)) {
+	if (boopName && (await checkFileExists(boopDirectory))) {
+		// at this point we know there's a file
 		let boopManifestPath = path.resolve(boopDirectory, "package.json")
 		let boopWebsitePath = path.resolve(boopDirectory, "website")
 
@@ -28,13 +28,20 @@ module.exports = async (request, response) => {
 			let nextRequest = getNextRequest(request)
 			if (main && main.endsWith(".js")) {
 				// we found a javascript module, hopefully can handle (request, repons)
+				// let's redirect to `module/` because that's expected for a root
+				if (request.url.endsWith("/") != true) {
+					return {
+						type: symbols.redirect,
+						to: request.url + "/",
+					}
+				}
 				let boop = require(boopDirectory)
 				return {
 					type: symbols.module,
 					module: boop,
 					request: nextRequest,
 					response: response,
-					result: boop(nextRequest, response)
+					result: boop(nextRequest, response),
 				}
 			} else if (await checkFileExists(boopWebsitePath)) {
 				// no javascript module, but we have some static files maybe?
@@ -42,7 +49,7 @@ module.exports = async (request, response) => {
 					type: symbols.static,
 					request: nextRequest,
 					response: response,
-					websiteDirectory: boopWebsitePath
+					websiteDirectory: boopWebsitePath,
 				}
 			}
 		}
@@ -50,6 +57,6 @@ module.exports = async (request, response) => {
 
 	// found nothing
 	return {
-		type: symbols.nothing
+		type: symbols.nothing,
 	}
 }
