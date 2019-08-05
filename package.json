@@ -1,6 +1,6 @@
 {
 	"name": "@snootclub/boop",
-	"version": "0.0.10",
+	"version": "0.0.11",
 	"description": "route snoot boops",
 	"main": "index.js",
 	"scripts": {
