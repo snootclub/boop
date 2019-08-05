@@ -16,6 +16,6 @@
 		"canvas-sketch-util": "^1.6.0"
 	},
 	"devDependencies": {
-		"cssnano": "^4.1.8"
+		"cssnano": "^4.1.10"
 	}
 }
