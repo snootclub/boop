@@ -2,19 +2,19 @@ let path = require("path")
 let readdir = require("util").promisify(require("fs").readdir)
 let checkFileExists = require("./check-file-existence.js")
 let execa = require("execa")
-
 let boopsDirectory = "boops"
+let colors = require("ansi-colors")
 
 let directoryReducer = (names, entry) =>
 	entry.isDirectory() ? names.concat(entry.name) : names
 
-let getBoopNames = async () =>
-	(await checkFileExists(boopsDirectory))
-		? (await readdir(boopsDirectory, {withFileTypes: true})).reduce(
-				directoryReducer,
-				[]
-		  )
-		: []
+let getBoopNames = async () => {
+	let exists = await checkFileExists(boopsDirectory)
+	if (!exists) return []
+
+	let dir = await readdir(boopsDirectory, {withFileTypes: true})
+	return dir.reduce(directoryReducer, [])
+}
 
 let getBoopPathFromName = name => path.resolve(boopsDirectory, name)
 
@@ -27,11 +27,13 @@ let npm = async (commandName, boopName) => {
 		let manifest = require(manifestPath)
 		let hasScript = manifest.scripts && commandName in manifest.scripts
 		if (!hasScript && !isInstall) {
-			console.info(`${boopName} doesn't have a ${commandName} script 🐁`)
+			process.stdout.write(
+				colors.grey(`${boopName} doesn't have a ${commandName} script 🐁\n`)
+			)
 			return
 		}
 	} else {
-		console.info(`no package.json in ${boopName} 🐇`)
+		process.stdout.write(colors.grey(`no package.json in ${boopName} 🐇\n`))
 		return
 	}
 
@@ -41,17 +43,35 @@ let npm = async (commandName, boopName) => {
 
 	let prefix = ["--prefix", getBoopPathFromName(boopName)]
 
-	console.log(`running ${commandName} in ${boopName} 🐕`)
+	let stdoutBoopPrefix = colors.bold.blue(`${boopName}\t`)
 
-	return execa("npm", [...prefix, ...command], {
+	process.stdout.write(stdoutBoopPrefix + commandName + "\tstart\t🐕\n")
+
+	let subprocess = execa("npm", [...prefix, ...command], {
 		extendEnv: true,
 		env: {
 			BOOP_WEBSITE_DIRECTORY: "website",
 			BOOP_PUBLIC_URL: `/${boopName}`,
 		},
-	}).then(
+	})
+
+	subprocess.stdout.on("data", data => {
+		process.stdout.write(
+			colors.grey(
+				data
+					.toString()
+					.trim()
+					.replace(/^/gm, stdoutBoopPrefix) + "\n"
+			)
+		)
+	})
+
+	return subprocess.then(
 		result => (
-			console.log(`completed ${commandName} in ${boopName} 🦔`), result
+			process.stdout.write(
+				stdoutBoopPrefix + commandName + colors.green.bold(" done!\t") + " 🦔\n"
+			),
+			result
 		)
 	)
 }

@@ -24,6 +24,7 @@
 		"boop": "./program.js"
 	},
 	"dependencies": {
+		"ansi-colors": "^4.1.1",
 		"commander": "^2.19.0",
 		"execa": "^1.0.0",
 		"serve-handler": "^5.0.7"
