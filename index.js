@@ -15,6 +15,7 @@ module.exports = async (request, response) => {
 		response.statusCode = 302
 		response.setHeader("Location", boop.to)
 		response.end()
+		return
 	}
 
 	if (boop.type == symbols.static) {
