@@ -1,6 +1,6 @@
 {
 	"name": "@snootclub/boop",
-	"version": "0.0.15",
+	"version": "0.0.16",
 	"description": "route snoot boops",
 	"main": "index.js",
 	"scripts": {
@@ -21,7 +21,7 @@
 	},
 	"homepage": "https://github.com/snootclub/boop#readme",
 	"bin": {
-		"boop": "./program.js"
+		"boop": "program.js"
 	},
 	"dependencies": {
 		"ansi-colors": "^4.1.1",
